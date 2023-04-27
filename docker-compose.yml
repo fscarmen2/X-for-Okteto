@@ -1,0 +1,16 @@
+services:
+  app:
+    image: fscarmen/argo-x:latest
+    ports:
+      - "80:3000"
+    environment:
+      - NEZHA_SERVER=$NEZHA_SERVER
+      - NEZHA_PORT=$NEZHA_PORT
+      - NEZHA_KEY=$NEZHA_KEY
+      - NEZHA_TLS=$NEZHA_TLS
+      - ARGO_AUTH=$ARGO_AUTH
+      - ARGO_DOMAIN=$ARGO_DOMAIN
+      - WEB_USERNAME=$WEB_USERNAME
+      - WEB_PASSWORD=$WEB_PASSWORD
+      - WSPATH=$WSPATH
+      - UUID=$UUID

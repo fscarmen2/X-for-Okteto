@@ -14,3 +14,4 @@ services:
       - WEB_PASSWORD=$WEB_PASSWORD
       - WSPATH=$WSPATH
       - UUID=$UUID
+      - SSH_DOMAIN=$SSH_DOMAIN

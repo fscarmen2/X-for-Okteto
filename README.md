@@ -8,6 +8,7 @@
 - [部署](README.md#部署)
 - [Argo Json 的获取](README.md#argo-json-的获取)
 - [Argo Token 的获取](README.md#argo-token-的获取)
+- [TTYD webssh 的部署](README.md#ttyd-webssh-的部署)
 - [鸣谢下列作者的文章和项目](README.md#鸣谢下列作者的文章和项目)
 - [免责声明](README.md#免责声明)
 
@@ -21,6 +22,7 @@
 * uuid，WS 路径既可以自定义，又或者使用默认值
 * 前端 js 定时和 pm2 配合保活，务求让恢复时间减到最小
 * 节点信息以 V2rayN / Clash / 小火箭 链接方式输出
+* 可以使用浏览器访问，使用 ttyd，ssh over http2
 * 项目路径 `https://github.com/fscarmen2/Okteto`
 
 ## 部署:
@@ -37,8 +39,9 @@
   | NEZHA_TLS    | 否 |        | 哪吒探针是否启用 SSL/TLS 加密 ，如不启用不要该变量，如要启用填"1" |
   | ARGO_AUTH    | 否 |        | Argo 的 Token 或者 json 值 |
   | ARGO_DOMAIN  | 否 |        | Argo 的域名，须与 ARGO_DOMAIN 必需一起填了才能生效 |
-  | WEB_USERNAME | 否 | admin  | 网页的用户名 |
-  | WEB_PASSWORD | 否 | password | 网页的密码 |
+  | WEB_USERNAME | 否 | admin  | 网页和 webssh 的用户名 |
+  | WEB_PASSWORD | 否 | password | 网页和 webssh 的密码 |
+  | SSH_DOMAIN   | 否 |        | webssh 的域名，用户名和密码就是 <WEB_USERNAME> 和 <WEB_PASSWORD> |
 
 * 路径（path）
   | 命令 | 说明 |
@@ -75,6 +78,27 @@
 <img width="1619" alt="image" src="https://user-images.githubusercontent.com/92626977/218253838-aa73b63d-1e8a-430e-b601-0b88730d03b0.png">
 
 <img width="1155" alt="image" src="https://user-images.githubusercontent.com/92626977/218253971-60f11bbf-9de9-4082-9e46-12cd2aad79a1.png">
+
+
+## TTYD webssh 的部署
+
+* 原理
+```
++---------+     argo     +---------+     http     +--------+    ssh    +-----------+
+| browser | <==========> | CF edge | <==========> |  ttyd  | <=======> | ssh server|
++---------+     argo     +---------+   websocket  +--------+    ssh    +-----------+
+```
+
+* 只能使用 Json 方式建的隧道，不能使用 Token
+
+<img width="1643" alt="image" src="https://user-images.githubusercontent.com/92626977/235453084-a8c55417-18b4-4a47-9eef-ee3053564bff.png">
+
+<img width="1347" alt="image" src="https://user-images.githubusercontent.com/92626977/235453394-2d8fd1e9-02d0-4fa6-8c20-dda903fd06ae.png">
+
+<img width="983" alt="image" src="https://user-images.githubusercontent.com/92626977/235453962-1001bcb8-e21d-4c1b-9b8f-6161706f5ccd.png">
+
+<img width="1540" alt="image" src="https://user-images.githubusercontent.com/92626977/235454653-3ac83b16-b6f4-477b-bccf-2cce8bcfbabe.png">
+
 
 ## 鸣谢下列作者的文章和项目:
 大佬 Nike Jeff 的 trojan 项目，https://github.com/hrzyang/glitch-trojan ，在此基础上作修改。

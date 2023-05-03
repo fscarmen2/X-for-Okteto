@@ -23,7 +23,7 @@
 * 前端 js 定时和 pm2 配合保活，务求让恢复时间减到最小
 * 节点信息以 V2rayN / Clash / 小火箭 链接方式输出
 * 可以使用浏览器访问，使用 ttyd，ssh over http2
-* 项目路径 `https://github.com/fscarmen2/Okteto`
+* 项目路径 `https://github.com/fscarmen2/X-for-Okteto`
 
 ## 部署:
 * 注册 [Okteto](https://www.okteto.com/) ，需要绑定 Github 账户，同时 Github 也要多加个企业邮箱，可以使用 CF 的域名邮箱，具体方法请谷歌

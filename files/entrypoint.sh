@@ -234,7 +234,7 @@ argo_type() {
     [[ \$ARGO_AUTH =~ TunnelSecret ]] && echo \$ARGO_AUTH > tunnel.json && cat > tunnel.yml << EOF
 tunnel: \$(cut -d\" -f12 <<< \$ARGO_AUTH)
 credentials-file: /app/tunnel.json
-protocol: h2mux
+protocol: http2
 
 ingress:
   - hostname: \$ARGO_DOMAIN
@@ -247,8 +247,6 @@ EOF
 EOF
 
     cat >> tunnel.yml << EOF
-    originRequest:
-      noTLSVerify: true
   - service: http_status:404
 EOF
 
@@ -319,8 +317,8 @@ check_variable() {
 # 下载最新版本 Nezha Agent
 download_agent() {
   if [ ! -e nezha-agent ]; then
-    URL=\$(wget -qO- "https://api.github.com/repos/naiba/nezha/releases/latest" | grep -o "https.*linux_amd64.zip")
-    URL=\${URL:-https://github.com/naiba/nezha/releases/download/v0.14.11/nezha-agent_linux_amd64.zip}
+    URL=\$(wget -qO- "https://api.github.com/repos/nezhahq/agent/releases/latest" | grep -o "https.*linux_amd64.zip")
+    URL=\${URL:-https://github.com/nezhahq/agent/releases/download/v0.15.6/nezha-agent_linux_amd64.zip}
     wget \${URL}
     unzip -qod ./ nezha-agent_linux_amd64.zip
     rm -f nezha-agent_linux_amd64.zip
@@ -366,9 +364,9 @@ EOF
 generate_pm2_file() {
   if [[ -n "${ARGO_AUTH}" && -n "${ARGO_DOMAIN}" ]]; then
     [[ $ARGO_AUTH =~ TunnelSecret ]] && ARGO_ARGS="tunnel --edge-ip-version auto --config tunnel.yml run"
-    [[ $ARGO_AUTH =~ ^[A-Z0-9a-z=]{120,250}$ ]] && ARGO_ARGS="tunnel --edge-ip-version auto --protocol h2mux run --token ${ARGO_AUTH}"
+    [[ $ARGO_AUTH =~ ^[A-Z0-9a-z=]{120,250}$ ]] && ARGO_ARGS="tunnel --edge-ip-version auto --protocol http2 run --token ${ARGO_AUTH}"
   else
-    ARGO_ARGS="tunnel --edge-ip-version auto --no-autoupdate --protocol h2mux --logfile argo.log --loglevel info --url http://localhost:8080"
+    ARGO_ARGS="tunnel --edge-ip-version auto --no-autoupdate --protocol http2 --logfile argo.log --loglevel info --url http://localhost:8080"
   fi
 
   TLS=${NEZHA_TLS:+'--tls'}
@@ -377,29 +375,37 @@ generate_pm2_file() {
 module.exports = {
   "apps":[
       {
-          "name":"web",
-          "script":"/app/web.js run"
+          name: 'web',
+          script: '/app/web.js run',
+          out_file: "/dev/null",
+          error_file: "/dev/null"
       },
       {
-          "name":"argo",
-          "script":"cloudflared",
-          "args":"${ARGO_ARGS}"
+          name: 'argo',
+          script: 'cloudflared',
+          args: "${ARGO_ARGS}",
+          out_file: "/dev/null",
+          error_file: "/dev/null"
 EOF
 
   [[ -n "${NEZHA_SERVER}" && -n "${NEZHA_PORT}" && -n "${NEZHA_KEY}" ]] && cat >> ecosystem.config.js << EOF
       },
       {
-          "name":"nezha",
-          "script":"/app/nezha-agent",
-          "args":"-s ${NEZHA_SERVER}:${NEZHA_PORT} -p ${NEZHA_KEY} ${TLS}"
+          name: 'nezha',
+          script: '/app/nezha-agent',
+          args: "-s ${NEZHA_SERVER}:${NEZHA_PORT} -p ${NEZHA_KEY} ${TLS}",
+          out_file: "/dev/null",
+          error_file: "/dev/null"
 EOF
   
   [ -n "${SSH_DOMAIN}" ] && cat >> ecosystem.config.js << EOF
       },
       {
-          "name":"ttyd",
-          "script":"/app/ttyd",
-          "args":"-c ${WEB_USERNAME}:${WEB_PASSWORD} -p 222 bash"
+          name: 'ttyd',
+          script: '/app/ttyd',
+          args: "-c ${WEB_USERNAME}:${WEB_PASSWORD} -p 222 bash",
+          out_file: "/dev/null",
+          error_file: "/dev/null"
 EOF
 
   cat >> ecosystem.config.js << EOF
